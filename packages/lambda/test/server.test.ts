@@ -1,3 +1,4 @@
+export const keepIsolatedModulesHappy = "";
 describe("AwsLambda", function () {
     // before(async function () {
     //     const app = new cdk.App();

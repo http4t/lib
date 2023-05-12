@@ -31,7 +31,7 @@ export type UnsecuredRouteFor<TRoute> =
 
 export type UnsecuredRoutesFor<TRoutes extends Routes> = { readonly [K in keyof TRoutes]: UnsecuredRouteFor<TRoutes[K]> }
 
-export function tokenProvidedRoute<TRoute extends Route<WithSecurity<any, TToken>, any>, TToken>(
+export function tokenProvidedRoute<TRoute extends SecuredRoute<TToken>, TToken>(
     serverRoute: TRoute,
     token: () => Promise<TToken> | TToken)
 
@@ -54,7 +54,7 @@ export function tokenProvidedRoutes<TRoutes extends SecuredRoutes<TRoutes, TToke
         .reduce(
             (acc, [k, route]) => {
                 const secured = tokenProvidedRoute(
-                    route as SecuredRoute<any, TToken>,
+                    route as SecuredRoute<TToken>,
                     token);
                 acc[k as keyof UnsecuredRoutesFor<TRoutes>] = secured as any;
                 return acc;

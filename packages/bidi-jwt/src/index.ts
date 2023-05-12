@@ -4,6 +4,7 @@ import {SecuredRoutes, securedRoutes} from "@http4t/bidi/auth";
 import {tokenToClaimsRoutes} from "@http4t/bidi/auth/server";
 import {isFailure} from "@http4t/result";
 import {Routes} from "@http4t/bidi/routes";
+import {UnsecuredRoutesFor} from "../../bidi/src/auth/client";
 
 export type JwtString = string;
 export type JwtPayload = {
@@ -61,15 +62,15 @@ export function jwtRoutes<TRoutes extends Routes>(
 }
 
 /**
- * For routes secured with a jwt string, maps each route to one
+ * For routes secured with a jwt string, maps each route to one where `TRequest` is wrapped in {@link WithSecurity}.
  */
 export function serverSideJwtRoutes<TRoutes extends SecuredRoutes<TRoutes, JwtString>,
     TToken,
     TClaims = JwtPayload>(
     tokenSecuredRoutes: TRoutes,
     jwtStrategy: JwtStrategy,
-    tokenToClaims: (token: JwtPayload) => Promise<RoutingResult<TClaims>>
-): SecuredRoutes<TRoutes, TClaims> {
+    tokenToClaims: (token: JwtPayload) => Promise<RoutingResult<TClaims>> | RoutingResult<TClaims>
+): SecuredRoutes<UnsecuredRoutesFor<TRoutes>, TClaims> {
 
     return tokenToClaimsRoutes(
         tokenSecuredRoutes,

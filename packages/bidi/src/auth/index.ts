@@ -4,11 +4,18 @@ import {BaseRequestLens, RequestLens, RoutingResult} from "../lenses";
 import {isFailure, success} from "@http4t/result";
 import {HttpRequest} from "@http4t/core/contract";
 
-export type SecuredRoute<TRoute extends Route, TClaimsOrToken> =
-    Route<WithSecurity<any, TClaimsOrToken>, any>;
+export type SecuredRoute<TClaimsOrToken> = Route<WithSecurity<any, TClaimsOrToken>, any>;
 
 export type SecuredRoutes<TRoutes extends Routes, TClaimsOrToken> =
-    { [K in keyof TRoutes]: SecuredRoute<TRoutes[K], TClaimsOrToken> }
+    { [K in keyof TRoutes]: SecuredRoute<TClaimsOrToken> }
+
+export type SecuredRouteFor<TRoute extends Route, TClaimsOrToken> =
+    Route extends Route<infer TRequest, infer TResponse>
+        ? Route<WithSecurity<TRequest, TClaimsOrToken>, TResponse>
+        : never;
+
+export type SecuredRoutesFor<TRoutes extends Routes, TClaimsOrToken> =
+    { [K in keyof TRoutes]: SecuredRouteFor<TRoutes[K], TClaimsOrToken> }
 
 export class WithSecurityLens<T, TToken> extends BaseRequestLens<WithSecurity<T, TToken>> {
     constructor(private readonly unsecuredLens: RequestLens<T>,
@@ -39,7 +46,7 @@ export function securedRoute<TRoute extends Route, TToken>(
     unsecuredRoute: TRoute,
     tokenLens: RequestLens<TToken>)
 
-    : SecuredRoute<TRoute, TToken> {
+    : SecuredRouteFor<TRoute, TToken> {
 
     return route(
         new WithSecurityLens(unsecuredRoute.request, tokenLens),
