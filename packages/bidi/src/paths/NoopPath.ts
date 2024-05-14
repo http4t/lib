@@ -13,3 +13,4 @@ export class NoopPath implements PathMatcher<undefined> {
         return "";
     }
 }
+export const NOOP = new NoopPath();

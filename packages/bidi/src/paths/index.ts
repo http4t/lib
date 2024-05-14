@@ -1,11 +1,11 @@
 import {join} from "./Joined";
-import {literal} from "./Literal";
 import {PathMatcher} from "./PathMatcher";
-import {SegmentsFn, VariablePaths, variablesPath} from "./variables";
+import {PathConsumer} from "./consumers";
 
-export function path(literal: string): PathMatcher<{}> ;
 
-export function path<T extends object>(vars: VariablePaths<T>, segmentFn: SegmentsFn<T>): PathMatcher<T>;
+export function path<Path extends string>(path: Path): PathMatcher<PathArgs<Path>> ;
+
+export function path<Path extends string>(path: Path, params: ParamConsumers<PathArgs<Path>>): PathMatcher<PathArgs<Path>>;
 
 export function path<A, B>(a: PathMatcher<A>, b: PathMatcher<B>): PathMatcher<A & B>;
 
@@ -17,11 +17,11 @@ export function path<A, B, C, D, E>(a: PathMatcher<A>, b: PathMatcher<B>, c: Pat
 
 export function path<T extends object>(...segments: PathMatcher<T>[]): PathMatcher<T>;
 
-export function path<T extends object>(
-    first: string | VariablePaths<T> | PathMatcher<T>,
-    second?: SegmentsFn<T> | PathMatcher<T>,
-    ...rest: PathMatcher<T>[])
-    : PathMatcher<T> | PathMatcher<undefined> {
+export function path(
+    first: string | PathMatcher,
+    second?: ParamConsumers | PathMatcher,
+    ...rest: PathMatcher[])
+    : PathMatcher {
 
     if (typeof first === "string") return literal(first);
     if (typeof second === "function") return variablesPath(first as VariablePaths<T>, second);

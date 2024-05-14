@@ -8,6 +8,49 @@ A modular web framework for Typescript
 
 Supports [RFC 2324](https://tools.ietf.org/html/rfc2324)
 
+## Design goals
+
+### Symmetrical interface between client and server
+
+An http client can be defined as: 
+
+```typescript
+type HttpHandler = (request: HttpRequest) => Promise<HttpResponse>
+```
+
+Notice that an http server is the same thing- it takes an `HttpRequest` and returns a response.
+
+By sharing an interface on both client and server we can:
+
+* Share code between server and client
+* Replace any code that uses an http client directly with the server-side `HttpHandler`, 
+  removing the need for network traffic in tests
+
+Although we can hack
+
+### Nothing outside HTTP spec
+
+By keeping `HttpRequest`, `HttpResponse` and `HttpHandler` extremely simple we make it very
+easy 
+
+### Json objects are valid requests/responses
+
+Although we support `Promise` and `AsyncIterator` bodies in order to support streaming use
+cases, you can just use a `string`.
+
+This is a perfectly fine `HttpResponse`:
+
+```json
+{
+   "status": 200,
+   "body": "Hello world"
+}
+```
+
+### Zero dependencies (except in packages specific to those dependencies)
+
+
+
 ## Contributing
 
 ### Development loop

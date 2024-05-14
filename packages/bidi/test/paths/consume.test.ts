@@ -1,18 +1,13 @@
 import chai from "chai";
-const { expect } = chai;
-import {
-    consume,
-    endOfPath,
-    exactlyChars,
-    exactlySegments,
-    nextSlashOrEnd,
-    upToChars,
-    upToSegments
-} from "@http4t/bidi/paths/consume";
+import {consume} from "@http4t/bidi/paths/consumers";
+import {ConsumeUntil} from "../../src/paths/ConsumeUntil";
+import {UpToChars} from "@http4t/bidi/paths/consumers/UpToChars";
+
+const {expect} = chai;
 
 describe('consume()', () => {
     it('consumes up to index defined by consumer function', async () => {
-        const result = consume("some/path", () => 4);
+        const result = consume("some/path", {consume:() => 4});
         expect(result).deep.eq({
             captured: "some",
             consumed: "some",
@@ -21,7 +16,7 @@ describe('consume()', () => {
     });
 
     it('strips leading slashes before consuming', async () => {
-        const result = consume("//some/path", () => 4);
+        const result = consume("//some/path", {consume:() => 4});
         expect(result).deep.eq({
             captured: "some",
             consumed: "//some",
@@ -30,12 +25,12 @@ describe('consume()', () => {
     });
 
     it('returns undefined on no match', async () => {
-        const result = consume("some/path", () => -1);
+        const result = consume("some/path", {consume:() => -1});
         expect(result).eq(undefined)
     });
 
     it('throws helpful exception if consumer returns impossible index', async () => {
-        expect(() => consume("/12345678", () => 9))
+        expect(() => consume("/12345678", {consume:() => 9}))
             .throws("cannot consume 9 characters from 8 character path '12345678'")
     });
 });
@@ -43,7 +38,7 @@ describe('consume()', () => {
 describe('consumers', () => {
     describe('upToChars', () => {
         it('consumes all characters available', async () => {
-            const result = consume("12345678", upToChars(4));
+            const result = consume("12345678", new UpToChars(4));
             expect(result).deep.eq({
                 captured: "1234",
                 consumed: "1234",
@@ -51,7 +46,7 @@ describe('consumers', () => {
             })
         });
         it('returns last index if insufficient characters', async () => {
-            const result = consume("123", upToChars(4));
+            const result = consume("123", new UpToChars(4));
             expect(result).deep.eq({
                 captured: "123",
                 consumed: "123",

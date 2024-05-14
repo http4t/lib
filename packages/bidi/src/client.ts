@@ -5,7 +5,7 @@ import {isFailure} from "@http4t/result";
 import {JsonPathError, ResultErrorOpts} from "@http4t/result/JsonPathError";
 import {prefix, prefixProducedBy, problem} from "@http4t/result/JsonPathResult";
 import {RequestLens, ResponseLens} from "./lenses";
-import {Route, Routes, ApiFnFor, ApiFor} from "./routes";
+import {ApiFnFor, ApiFor, Route, Routes} from "./routes";
 import {Mutable} from "./util/mutable";
 import {assertExhaustive} from "@http4t/core/util/assertExhaustive";
 import {Http4tHeaders, Http4tRouteResult} from "./lifecycles/headers";
@@ -53,6 +53,8 @@ function validator<T>(
         const routeResult = getHeaderValue(response, Http4tHeaders.ROUTE_RESULT) as Http4tRouteResult | undefined;
         if (routeResult) {
             switch (routeResult) {
+                case undefined:
+                    break;
                 case Http4tRouteResult.SUCCESS:
                     break;
                 case Http4tRouteResult.CLIENT_ERROR:

@@ -35,3 +35,20 @@ export function encodePairs(values: DecodedPair[]): string | undefined {
         .map(encodePair)
         .join('&');
 }
+
+export function decodeToObj(value: string | undefined): Record<string, string | string[]> {
+    return pairsToObj(decodePairs(value))
+}
+
+export function pairsToObj(pairs: DecodedPair[]): Record<string, string | string[]> {
+    const result = {} as any;
+    for (const [k, v] of pairs) {
+        const existing = result[k];
+        result[k] = typeof existing === "undefined"
+            ? v
+            : typeof existing === "string"
+                ? [existing, v]
+                : [...existing, v];
+    }
+    return result;
+}

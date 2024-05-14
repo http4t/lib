@@ -12,7 +12,7 @@ export type PathError = {
 
 export type PathResult<T> = Result<PathError, Matched<T>>;
 
-export interface PathMatcher<T> {
+export interface PathMatcher<T = unknown> {
     consume(path: string): PathResult<T>;
 
     expand(value: T): string;

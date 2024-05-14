@@ -6,6 +6,7 @@ import {ParsedAuthority, ParsedUri} from "./contract";
 export type UriLike = string | ParsedUri;
 
 export class Uri implements ParsedUri {
+    static RFC_3986 = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
     readonly scheme?: string;
     readonly authority?: ParsedAuthority;
     readonly path: string;
@@ -19,8 +20,6 @@ export class Uri implements ParsedUri {
         this.query = query;
         this.fragment = fragment;
     }
-
-    static RFC_3986 = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
 
     /** {@link https://tools.ietf.org/html/rfc3986#appendix-B } */
     static parse(uri: string) {
@@ -56,9 +55,34 @@ export class Uri implements ParsedUri {
     toJSON() {
         return this.toString();
     }
+
+    with(values: Partial<ParsedUri>): Uri {
+        return Uri.of({...this, ...values})
+    }
+
+    withScheme(value: string | undefined): Uri {
+        return Uri.of({...this, scheme: value})
+    }
+
+    withAuthority(value: ParsedAuthority): Uri {
+        return Uri.of({...this, authority: value})
+    }
+
+    withPath(value: string): Uri {
+        return Uri.of({...this, path: value})
+    }
+
+    withQuery(value: undefined | string): Uri {
+        return Uri.of({...this, query: value})
+    }
+
+    withFragment(value: undefined | string): Uri {
+        return Uri.of({...this, fragment: value})
+    }
 }
 
 export class Authority implements ParsedAuthority {
+    private static readonly REGEX = /^(?:([^@]+)@)?(\[.+\]|[^:]+)(?:\:([\d]+))?$/;
     readonly user?: string;
     readonly host: string;
     readonly port?: number;
@@ -70,13 +94,10 @@ export class Authority implements ParsedAuthority {
         if (port) this.port = port;
     }
 
-
     static of(authority: ParsedAuthority | string): Authority {
         if (authority instanceof Authority) return authority;
         return typeof authority === 'string' ? Authority.parse(authority) : new Authority(authority);
     }
-
-    private static readonly REGEX = /^(?:([^@]+)@)?(\[.+\]|[^:]+)(?:\:([\d]+))?$/;
 
     static parse(input: string): Authority {
         if (input === '') return Authority.of({host: ''});

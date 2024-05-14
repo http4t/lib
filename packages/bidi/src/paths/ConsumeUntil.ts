@@ -1,37 +1,24 @@
 import {failure, success} from "@http4t/result";
-import {
-    consume,
-    endOfPath,
-    exactlyChars,
-    exactlySegments,
-    nextSlashOrEnd,
-    PathConsumer,
-    upToChars,
-    upToSegments
-} from "./consume";
+import {consume, PathConsumer} from "./consumers";
 import {PathMatcher, PathResult} from "./PathMatcher";
+import {UpToChars} from "./consumers/UpToChars";
+import {ExactlyChars} from "./consumers/ExactlyChars";
+import {NextSlashOrEnd} from "./consumers/NextSlashOrEnd";
+import {EndOfPath} from "./consumers/EndOfPath";
 
 export class ConsumeUntil implements PathMatcher<string> {
-    static nextSlashOrEnd = new ConsumeUntil(nextSlashOrEnd);
-    static endOfPath = new ConsumeUntil(endOfPath);
+    static nextSlashOrEnd = new ConsumeUntil(new NextSlashOrEnd());
+    static endOfPath = new ConsumeUntil(new EndOfPath());
 
-    constructor(private readonly consumer: PathConsumer) {
+    constructor(readonly consumer: PathConsumer) {
     }
 
     static exactlyChars(count: number): PathMatcher<string> {
-        return new ConsumeUntil(exactlyChars(count));
+        return new ConsumeUntil(new ExactlyChars(count));
     }
 
     static upToChars(count: number): PathMatcher<string> {
-        return new ConsumeUntil(upToChars(count));
-    }
-
-    static exactlySegments(count: number): PathMatcher<string> {
-        return new ConsumeUntil(exactlySegments(count));
-    }
-
-    static upToSegments(count: number): PathMatcher<string> {
-        return new ConsumeUntil(upToSegments(count));
+        return new ConsumeUntil(new UpToChars(count));
     }
 
     consume(path: string): PathResult<string> {

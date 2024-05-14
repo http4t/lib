@@ -1,8 +1,5 @@
 {
   "extends": "../../../tsconfig-test-base.json",
-  "compilerOptions": {
-    "types": ["node","mocha"]
-  },
   "references": [
     {
       "path": "../src"

@@ -1,0 +1,16 @@
+{
+  "name": "@http4t/bidi-openapi",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "@http4t/core": "1.0.0",
+    "@http4t/result": "1.0.0",
+    "@http4t/bidi": "1.0.0",
+    "openapi3-ts": "^4.0.3",
+    "jose": "^4.13.1"
+  }
+}

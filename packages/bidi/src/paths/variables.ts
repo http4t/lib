@@ -1,5 +1,4 @@
 import {map} from "@http4t/result";
-import {exactlyChars, exactlySegments, upToChars, upToSegments} from "./consume";
 import {ConsumeUntil} from "./ConsumeUntil";
 import {join} from "./Joined";
 import {literal} from "./Literal";
@@ -12,17 +11,9 @@ import {PathMatcher, PathResult} from "./PathMatcher";
 export const v = {
     segment: ConsumeUntil.nextSlashOrEnd,
 
-    upToChars: (count: number) => new ConsumeUntil(upToChars(count)),
+    upToChars: (count: number) => ConsumeUntil.upToChars(count),
 
-    exactlyChars: (count: number) => new ConsumeUntil(exactlyChars(count)),
-
-    upToSegments: (count: number) => new SplitStringPath(
-        new ConsumeUntil(upToSegments(count)),
-        '/'),
-
-    exactlySegments: (count: number) => new SplitStringPath(
-        new ConsumeUntil(exactlySegments(count)),
-        '/'),
+    exactlyChars: (count: number) => ConsumeUntil.exactlyChars(count),
 
     restOfPath: new SplitStringPath(ConsumeUntil.endOfPath, '/'),
 
@@ -44,7 +35,7 @@ export type VariablePaths<T extends object> = { readonly [K in keyof T]: PathMat
 export type Variable<T, K extends keyof T = keyof T> = { key: K };
 export type Variables<T extends object> = { readonly [K in keyof T]: Variable<T, K> };
 
-export class VariablePath<T, K extends keyof T> implements PathMatcher<{ K: T[K] }> {
+export class VariablePath<T = unknown, K extends keyof T = any> implements PathMatcher<{ K: T[K] }> {
     constructor(
         private readonly key: K,
         private readonly value: PathMatcher<T[K]>) {
